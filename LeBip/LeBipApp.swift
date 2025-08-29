@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct LeBipApp: App {
+    @AppStorage("playerColorIndex") var playerColorIndex = 0
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
+                .environment(
+                    \.playerColor,
+                     .playerColors[playerColorIndex]
+                )
         }
     }
 }
