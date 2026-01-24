@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct LeBipApp: App {
+    @StateObject private var gameState: GameState = GameState()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environmentObject(gameState)
         }
     }
 }
