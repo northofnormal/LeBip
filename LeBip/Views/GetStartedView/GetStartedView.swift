@@ -34,11 +34,16 @@ struct GetStartedView: View {
                         )
                 }
 
-                Toggle(isOn: $isShowingTimerSheet) {
-                    Text("Timed turns?")
-                        .textStyle(HeadlineTextStyle())
+                if let turnDuration = gameState.turnDuration {
+                    Text("Timed Turn: \(formatSecondsToReadable(turnDuration))")
+                        .textStyle(SubTitleTextStyle())
+                } else {
+                    Toggle(isOn: $isShowingTimerSheet) {
+                        Text("Timed turns?")
+                            .textStyle(HeadlineTextStyle())
+                    }
+                    .tint(AppColor.playerRose)
                 }
-                .tint(AppColor.playerRose)
 
                 VStack(spacing: 5) {
                     if !gameState.players.isEmpty {
@@ -78,6 +83,32 @@ struct GetStartedView: View {
             }
             .background(Color(AppColor.bgPrimary))
         }
+    }
+
+    func secondsToHoursMinutesSeconds(_ seconds: Double) -> (Double, Double, Double) {
+      let (hr,  minf) = modf(seconds / 3600)
+      let (min, secf) = modf(60 * minf)
+      return (hr, min, 60 * secf)
+    }
+
+    func formatSecondsToReadable(_ seconds: Double) -> String {
+      let (h, m, s) = secondsToHoursMinutesSeconds(seconds)
+
+        var formattedTime: String = ""
+
+        if !h.isZero {
+            formattedTime += "\(Int(h)) hours, "
+        }
+
+        if !m.isZero {
+            formattedTime += "\(Int(m)) minutes, "
+        }
+
+        if !s.isZero {
+            formattedTime += "\(Int(s)) seconds"
+        }
+
+        return formattedTime
     }
 }
 

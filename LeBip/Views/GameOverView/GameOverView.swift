@@ -26,6 +26,15 @@ struct GameOverView: View {
             }
 
             Spacer()
+            Button {
+                gameState.resetToSetup()
+                dismiss()
+            } label: {
+                Text("No winner, just ending the game.")
+                    .textStyle(BodyTextStyle())
+                    .multilineTextAlignment(.center)
+            }
+            .buttonStyle(PillButtonStyle())
         }
         .padding()
         .background(AppColor.bgPrimary)

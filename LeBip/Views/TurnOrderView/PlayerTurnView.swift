@@ -12,14 +12,30 @@ struct PlayerTurnView: View {
 
     var body: some View {
         ZStack {
-            if let progress = gameState.progress {
-                TimerRingView(progress: progress)
+            if gameState.turnDuration != nil {
+                TimerRingView()
                     .id(gameState.turnID)
             }
 
             VStack(spacing: 8) {
                 Text(gameState.currentPlayer.name)
                     .textStyle(TitleTextStyle())
+
+                if gameState.turnDuration != nil {
+                    Button {
+                        if gameState.timerStatus == .running {
+                            gameState.pauseTimer()
+                        } else if gameState.timerStatus == .paused {
+                            gameState.resumeTimer()
+                        }
+                    } label: {
+                        Image(systemName: gameState.timerStatus == .running
+                              ? "pause.fill"
+                              : "play.fill")
+                        .font(.system(size: 50, weight: .bold, design: .rounded))
+                        .tint(AppColor.textSecondary)
+                    }
+                }
             }
         }
         .frame(width: 240, height: 240)
@@ -42,26 +58,4 @@ struct PlayerTurnView: View {
             ],
                       turnDuration: 60)
         )
-}
-
-
-struct TimerRingView: View {
-    let progress: TimeInterval
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(lineWidth: 12)
-                .opacity(0.2)
-
-            Circle() // make this one a color
-                .trim(from: 0, to: progress)
-                .stroke(style: StrokeStyle(
-                    lineWidth: 12,
-                    lineCap: .round
-                ))
-                .rotationEffect(.degrees(-90))
-                .animation(.linear(duration: 1), value: progress)
-        }
-    }
 }

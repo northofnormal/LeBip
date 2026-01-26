@@ -9,15 +9,16 @@ import SwiftUI
 
 struct TurnOrderView: View {
     @EnvironmentObject var gameState: GameState
+    @Environment(\.dismiss) var dismiss
 
-    @State private var isShowingGameOverSheet: Bool = false
+    @State private var shouldDismiss: Bool = false
 
     var body: some View {
         VStack {
             HStack {
                 Spacer()
                 Button("End Game") {
-                    isShowingGameOverSheet.toggle()
+                    gameState.endGame() 
                 }
                 .buttonStyle(.glass)
                 .tint(AppColor.textSecondary)
@@ -53,8 +54,10 @@ struct TurnOrderView: View {
         }
         .padding()
         .background(Color(AppColor.bgPrimary))
-        .sheet(isPresented: $isShowingGameOverSheet) {
-            GameOverView()
+        .onChange(of: shouldDismiss) { _, newValue in
+            if newValue == true {
+                dismiss()
+            }
         }
 
     }

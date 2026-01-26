@@ -18,10 +18,16 @@ final class GameState: ObservableObject {
     @Published var gamePhase: GamePhase = .setup
     @Published var turnDuration: TimeInterval?
     @Published var remainingTime: TimeInterval?
-
     @Published var winner: Player? = nil
+    @Published var timerStatus: TimerStatus = .stopped
 
     private var timerTask: Task<Void, Never>?
+
+    enum TimerStatus {
+        case stopped
+        case running
+        case paused
+    }
 
     init(players: [Player] = [], currentIndex: Int = 0, turnID: Int = 0, gamePhase: GamePhase = .setup, turnDuration: TimeInterval? = nil, remainingTime: TimeInterval? = nil, timerTask: Task<Void, Never>? = nil, winner: Player? = nil) {
         self.players = players
@@ -58,23 +64,26 @@ extension GameState {
     }
 
     func startTurn() {
-        resetTimerIfNeeded()
+        resetTimer()
     }
 
     func endTurn() {
         turnID += 1
         advanceIndex()
-        resetTimerIfNeeded()
+        resetTimer()
     }
 
     private func advanceIndex() {
         currentIndex = (currentIndex + 1) % players.count
     }
 
-    private func resetTimerIfNeeded() {
+    private func resetTimer() {
         timerTask?.cancel()
+        timerTask = nil
+
         guard let turnDuration else {
             remainingTime = nil
+            timerStatus = .stopped
             return
         }
 
@@ -82,17 +91,45 @@ extension GameState {
         startTimer()
     }
 
+
     private func startTimer() {
-        guard remainingTime != nil else { return }
+        timerTask?.cancel()
+
+        guard let _ = turnDuration else { return }
+
+        timerStatus = .running
 
         timerTask = Task {
-            if let time = remainingTime {
-                while time > 0 {
-                    try? await Task.sleep(for: .seconds(1))
-                    remainingTime! -= 1 // we've already checked for remainingTime
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+
+                await MainActor.run {
+                    guard timerStatus == .running,
+                          let remaining = remainingTime,
+                          remaining > 0
+                    else { return }
+
+                    withAnimation(.linear(duration: 1)) {
+                        remainingTime = remaining - 1
+                    }
+
+                    if remainingTime == 0 {
+                        timerStatus = .stopped
+                        // trigger timeout effects here later
+                    }
                 }
             }
         }
+    }
+
+    func pauseTimer() {
+        guard remainingTime != nil, timerStatus == .running else { return }
+        timerStatus = .paused
+    }
+
+    func resumeTimer() {
+        guard remainingTime != nil, timerStatus == .paused else { return }
+        timerStatus = .running
     }
 
     func add(player: Player) {
@@ -143,10 +180,16 @@ extension GameState {
 
     func resetToSetup() {
         timerTask?.cancel()
+        timerTask = nil
 
         players.removeAll()
+        currentIndex = 0
+        turnID = 0
         turnDuration = nil
         remainingTime = nil
+        timerStatus = .stopped
+        winner = nil
+
         gamePhase = .setup
     }
 
@@ -159,13 +202,19 @@ extension GameState {
         }
 
         gamePhase = .inGame
-        resetTimerIfNeeded()
+        resetTimer()
+    }
+
+    func endGame() {
+        guard gamePhase == .inGame else { return }
+
+        gamePhase = .gameOver
     }
 
     func setWinner(_ player: Player) {
-        guard gamePhase == .inGame else { return }
+        guard gamePhase == .gameOver else { return }
 
         winner = player
-        gamePhase = .gameOver
+        gamePhase = .celebrate
     }
 }

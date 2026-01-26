@@ -12,4 +12,5 @@ enum GamePhase {
     case choosingFirst
     case inGame
     case gameOver
+    case celebrate
 }

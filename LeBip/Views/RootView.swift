@@ -19,6 +19,8 @@ struct RootView: View {
         case .inGame:
             TurnOrderView()
         case .gameOver:
+            GameOverView()
+        case .celebrate:
             CelebrationView()
         }
     }
