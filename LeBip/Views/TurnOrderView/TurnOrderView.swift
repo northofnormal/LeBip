@@ -24,7 +24,7 @@ struct TurnOrderView: View {
                 .tint(AppColor.textSecondary)
             }
 
-            Text("Current Turn")
+            Text(gameState.timeExpired ? "Time Expired" : "Current Turn")
                 .textStyle(TitleTextStyle())
 
             Spacer()
@@ -53,11 +53,17 @@ struct TurnOrderView: View {
             .buttonStyle(LargeButtonStyle())
         }
         .padding()
-        .background(Color(AppColor.bgPrimary))
+        .background(gameState.timeExpired ? Color.red : AppColor.bgPrimary)
         .onChange(of: shouldDismiss) { _, newValue in
             if newValue == true {
                 dismiss()
             }
+        }
+        .onChange(of: gameState.timeExpired) { _, expired in
+            guard expired else { return }
+            let generator = UIImpactFeedbackGenerator(style: .heavy)
+                generator.prepare()
+                generator.impactOccurred()
         }
 
     }

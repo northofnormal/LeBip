@@ -17,6 +17,7 @@ struct AddPlayerView: View {
     var body: some View {
         VStack(spacing: 20) {
             TextField("Player Name", text: $playerName)
+                .autocorrectionDisabled(true)
                 .textFieldStyle(.roundedBorder)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
             
@@ -49,6 +50,7 @@ struct AddPlayerView: View {
             .fixedSize(horizontal: false, vertical: true)
         }
         .padding()
+        .padding(.top, 20)
         .background(Color(AppColor.bgAlt))
     }
 }

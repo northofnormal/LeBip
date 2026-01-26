@@ -20,6 +20,7 @@ final class GameState: ObservableObject {
     @Published var remainingTime: TimeInterval?
     @Published var winner: Player? = nil
     @Published var timerStatus: TimerStatus = .stopped
+    @Published var timeExpired: Bool = false
 
     private var timerTask: Task<Void, Never>?
 
@@ -69,6 +70,7 @@ extension GameState {
 
     func endTurn() {
         turnID += 1
+        timeExpired = false
         advanceIndex()
         resetTimer()
     }
@@ -115,7 +117,7 @@ extension GameState {
 
                     if remainingTime == 0 {
                         timerStatus = .stopped
-                        // trigger timeout effects here later
+                        timeExpired = true
                     }
                 }
             }
