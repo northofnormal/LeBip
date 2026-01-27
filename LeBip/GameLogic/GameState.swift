@@ -14,8 +14,6 @@ final class GameState: ObservableObject {
     @Published private(set) var players: [Player] = []
     @Published private(set) var currentIndex: Int = 0
     @Published private(set) var turnID: Int = 0
-
-    // should these be private(set) as well? think about it
     @Published private(set) var gamePhase: GamePhase = .setup
     @Published private(set) var turnDuration: TimeInterval?
     @Published private(set) var remainingTime: TimeInterval?
@@ -34,6 +32,30 @@ final class GameState: ObservableObject {
     init(players: [Player] = []) {
         self.players = players
     }
+
+#if DEBUG
+    init(
+        players: [Player],
+        currentIndex: Int = 0,
+        turnID: Int = 0,
+        gamePhase: GamePhase = .setup,
+        turnDuration: TimeInterval? = nil,
+        remainingTime: TimeInterval? = nil,
+        timerStatus: TimerStatus = .stopped,
+        timeExpired: Bool = false,
+        winner: Player? = nil
+    ) {
+        self.players = players
+        self.currentIndex = currentIndex
+        self.turnID = turnID
+        self.gamePhase = gamePhase
+        self.turnDuration = turnDuration
+        self.remainingTime = remainingTime
+        self.timerStatus = timerStatus
+        self.timeExpired = timeExpired
+        self.winner = winner
+    }
+#endif
 
 }
 
