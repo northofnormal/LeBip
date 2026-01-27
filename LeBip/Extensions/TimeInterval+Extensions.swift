@@ -16,15 +16,15 @@ extension TimeInterval {
         var formattedTime: String = ""
 
         if !h.isZero {
-            formattedTime += "\(Int(h)) hours, "
+            formattedTime += "\(Int(h)) hours"
         }
 
         if !m.isZero {
-            formattedTime += "\(Int(m)) minutes, "
+            formattedTime += " \(Int(m)) minutes"
         }
 
         if !s.isZero {
-            formattedTime += "\(Int(s)) seconds"
+            formattedTime += " \(Int(s)) seconds"
         }
 
         return formattedTime

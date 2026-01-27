@@ -15,12 +15,13 @@ final class GameState: ObservableObject {
     @Published private(set) var currentIndex: Int = 0
     @Published private(set) var turnID: Int = 0
 
-    @Published var gamePhase: GamePhase = .setup
-    @Published var turnDuration: TimeInterval?
-    @Published var remainingTime: TimeInterval?
-    @Published var winner: Player? = nil
-    @Published var timerStatus: TimerStatus = .stopped
-    @Published var timeExpired: Bool = false
+    // should these be private(set) as well? think about it
+    @Published private(set) var gamePhase: GamePhase = .setup
+    @Published private(set) var turnDuration: TimeInterval?
+    @Published private(set) var remainingTime: TimeInterval?
+    @Published private(set) var winner: Player? = nil
+    @Published private(set) var timerStatus: TimerStatus = .stopped
+    @Published private(set) var timeExpired: Bool = false
 
     private var timerTask: Task<Void, Never>?
 
@@ -80,8 +81,7 @@ extension GameState {
 
     private func startTimer() {
         // assumes no existing Timer
-
-        guard let _ = turnDuration else { return }
+        guard turnDuration != nil else { return }
 
         timerStatus = .running
 

@@ -37,7 +37,7 @@ struct GetStartedView: View {
                 }
 
                 if let turnDuration = gameState.turnDuration {
-                    Text("Timed Turn: \(turnDuration.readable))")
+                    Text("Timed Turn: \(turnDuration.readable)")
                         .textStyle(SubTitleTextStyle())
                 } else {
                     Button {
