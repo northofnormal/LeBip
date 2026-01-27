@@ -9,5 +9,9 @@ Create a usable, brightly-colored, fun turn-tracking app that features a first-p
 - only allow selection of one color per player per game (two people can't be green)
 
 # Track ideas/feedback here: 
+- playerListView height in the getting started screen: content height, with a max? 
+- all your Texts overflow weirdly 
+- extract your hard-coded strings to a Localizable file
+
 
 

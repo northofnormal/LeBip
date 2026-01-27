@@ -47,8 +47,6 @@ struct CelebrationView: View {
             GameState(players: [
                 Player(id: UUID(), name: "Horace", color: AppColor.playerMustard),
                 Player(id: UUID(), name: "Aisha", color: AppColor.playerGrape)
-            ],
-                      turnDuration: 60,
-                      winner: Player(id: UUID(), name: "Lola", color: AppColor.playerTeal))
+            ])
         )
 }

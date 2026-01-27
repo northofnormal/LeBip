@@ -11,14 +11,14 @@ struct TurnOrderView: View {
     @EnvironmentObject var gameState: GameState
     @Environment(\.dismiss) var dismiss
 
-    @State private var shouldDismiss: Bool = false
+    @State var showAlert: Bool = false
 
     var body: some View {
         VStack {
             HStack {
                 Spacer()
                 Button("End Game") {
-                    gameState.endGame() 
+                    showAlert.toggle()
                 }
                 .buttonStyle(.glass)
                 .tint(AppColor.textSecondary)
@@ -36,8 +36,9 @@ struct TurnOrderView: View {
                 .textStyle(SubTitleTextStyle())
 
             VStack {
-                PlayerListItemView(player: gameState.nextPlayer)
-                PlayerListItemView(player: gameState.nextNextPlayer)
+                ForEach(gameState.upcomingPlayers(count: 2)) { player in
+                    PlayerListItemView(player: player)
+                }
             }
 
             Spacer()
@@ -54,17 +55,22 @@ struct TurnOrderView: View {
         }
         .padding()
         .background(gameState.timeExpired ? Color.red : AppColor.bgPrimary)
-        .onChange(of: shouldDismiss) { _, newValue in
-            if newValue == true {
-                dismiss()
-            }
-        }
         .onChange(of: gameState.timeExpired) { _, expired in
             guard expired else { return }
             let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.prepare()
                 generator.impactOccurred()
         }
+        .alert("Are you sure?", isPresented: $showAlert, actions: {
+            Button(role: .destructive) {
+                gameState.endGame()
+            } label: {
+                Text("Game Over")
+            }
+            Button("Cancel", role: .cancel) { }
+        }, message: {
+            Text("Are you sure you want to end the game?")
+        })
 
     }
 }
@@ -75,7 +81,6 @@ struct TurnOrderView: View {
             GameState(players: [
                 Player(id: UUID(), name: "Horace", color: AppColor.playerMustard),
                 Player(id: UUID(), name: "Aisha", color: AppColor.playerGrape)
-            ],
-                      turnDuration: 60)
+            ])
         )
 }

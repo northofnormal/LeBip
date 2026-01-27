@@ -30,32 +30,16 @@ final class GameState: ObservableObject {
         case paused
     }
 
-    init(players: [Player] = [], currentIndex: Int = 0, turnID: Int = 0, gamePhase: GamePhase = .setup, turnDuration: TimeInterval? = nil, remainingTime: TimeInterval? = nil, timerTask: Task<Void, Never>? = nil, winner: Player? = nil) {
+    init(players: [Player] = []) {
         self.players = players
-        self.currentIndex = currentIndex
-        self.turnID = turnID
-        self.gamePhase = gamePhase
-        self.turnDuration = turnDuration
-        self.remainingTime = remainingTime
-        self.timerTask = timerTask
-        self.winner = winner
     }
 
 }
 
 extension GameState {
-    var currentPlayer: Player {
-        players[currentIndex]
-    }
-
-    var nextPlayer: Player {
-        let nextIndex = (currentIndex + 1) % players.count
-        return players[nextIndex]
-    }
-
-    var nextNextPlayer: Player {
-        let nextNextIndex = (currentIndex + 2) % players.count
-        return players[nextNextIndex]
+    var currentPlayer: Player? {
+        guard players.indices.contains(currentIndex) else { return nil }
+        return players[currentIndex]
     }
 
     var progress: Double? {
@@ -95,7 +79,7 @@ extension GameState {
 
 
     private func startTimer() {
-        timerTask?.cancel()
+        // assumes no existing Timer
 
         guard let _ = turnDuration else { return }
 
@@ -118,6 +102,8 @@ extension GameState {
                     if remainingTime == 0 {
                         timerStatus = .stopped
                         timeExpired = true
+                        timerTask?.cancel()
+                        timerTask = nil
                     }
                 }
             }
@@ -195,6 +181,12 @@ extension GameState {
         gamePhase = .setup
     }
 
+    func proceedToChoseFirstPlayer() {
+        guard gamePhase == .setup else { return }
+
+        gamePhase = .choosingFirst
+    }
+
     func chooseFirstPlayer() async {
         guard gamePhase == .choosingFirst else { return }
 
@@ -218,5 +210,18 @@ extension GameState {
 
         winner = player
         gamePhase = .celebrate
+    }
+
+    func upcomingPlayers(count: Int) -> [Player] {
+        guard !players.isEmpty,
+              players.indices.contains(currentIndex),
+              count > 0 else {
+            return []
+        }
+
+        return (1...count).compactMap { offset in
+            let index = (currentIndex + offset) % players.count
+            return players[index]
+        }
     }
 }

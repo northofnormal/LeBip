@@ -17,6 +17,16 @@ struct PillButtonStyle: ButtonStyle {
     }
 }
 
+struct AltPillButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration)  -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(AppColor.playerCoral)
+            .clipShape(Capsule())
+    }
+}
+
 struct LargeButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

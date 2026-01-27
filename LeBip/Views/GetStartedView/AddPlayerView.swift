@@ -61,7 +61,6 @@ struct AddPlayerView: View {
             GameState(players: [
                 Player(id: UUID(), name: "Horace", color: AppColor.playerMustard),
                 Player(id: UUID(), name: "Aisha", color: AppColor.playerGrape)
-            ],
-                      turnDuration: 60)
+            ])
         )
 }

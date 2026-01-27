@@ -13,6 +13,8 @@ struct GetStartedView: View {
     @State var isShowingTimerSheet: Bool = false
     @State private var sheetHeight: CGFloat = .zero
 
+    private let playerListMaxHeight: CGFloat = 300.0
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -27,7 +29,7 @@ struct GetStartedView: View {
 
                 if !gameState.players.isEmpty {
                     PlayerListView(shouldDismiss: .constant(false))
-                        .frame(height: 300)
+                        .frame(height: playerListMaxHeight)
                         .overlay(
                             RoundedRectangle(cornerRadius: 15)
                                 .stroke(Color.gray, lineWidth: 3)
@@ -35,26 +37,28 @@ struct GetStartedView: View {
                 }
 
                 if let turnDuration = gameState.turnDuration {
-                    Text("Timed Turn: \(formatSecondsToReadable(turnDuration))")
+                    Text("Timed Turn: \(turnDuration.readable))")
                         .textStyle(SubTitleTextStyle())
                 } else {
-                    Toggle(isOn: $isShowingTimerSheet) {
-                        Text("Timed turns?")
-                            .textStyle(HeadlineTextStyle())
+                    Button {
+                        isShowingTimerSheet.toggle()
+                    } label: {
+                        Text("Set a turn timer?")
+                            .textStyle(SubTitleTextStyle())
                     }
-                    .tint(AppColor.playerRose)
+                    .buttonStyle(AltPillButtonStyle())
                 }
 
                 VStack(spacing: 5) {
                     if !gameState.players.isEmpty {
                         Button {
-                            gameState.gamePhase = .choosingFirst
+                            gameState.proceedToChoseFirstPlayer()
                         } label: {
                             Text("Choose First Player")
                                 .textStyle(SubTitleTextStyle())
                         }
                         .buttonStyle(PillButtonStyle())
-                        Text("Randomly set a first player, or go with the order above")
+                        Text("Randomly set a first player, or skip and stick with the order above")
                             .textStyle(BodyTextStyle())
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -84,32 +88,6 @@ struct GetStartedView: View {
             .background(Color(AppColor.bgPrimary))
         }
     }
-
-    func secondsToHoursMinutesSeconds(_ seconds: Double) -> (Double, Double, Double) {
-      let (hr,  minf) = modf(seconds / 3600)
-      let (min, secf) = modf(60 * minf)
-      return (hr, min, 60 * secf)
-    }
-
-    func formatSecondsToReadable(_ seconds: Double) -> String {
-      let (h, m, s) = secondsToHoursMinutesSeconds(seconds)
-
-        var formattedTime: String = ""
-
-        if !h.isZero {
-            formattedTime += "\(Int(h)) hours, "
-        }
-
-        if !m.isZero {
-            formattedTime += "\(Int(m)) minutes, "
-        }
-
-        if !s.isZero {
-            formattedTime += "\(Int(s)) seconds"
-        }
-
-        return formattedTime
-    }
 }
 
 #Preview {
@@ -118,8 +96,7 @@ struct GetStartedView: View {
             GameState(players: [
                 Player(id: UUID(), name: "Horace", color: AppColor.playerMustard),
                 Player(id: UUID(), name: "Aisha", color: AppColor.playerGrape)
-            ],
-                      turnDuration: 60)
+            ])
         )
 }
 

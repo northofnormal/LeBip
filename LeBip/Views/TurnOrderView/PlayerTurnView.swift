@@ -18,7 +18,7 @@ struct PlayerTurnView: View {
             }
 
             VStack(spacing: 8) {
-                Text(gameState.currentPlayer.name)
+                Text(gameState.currentPlayer?.name ?? "")
                     .textStyle(TitleTextStyle())
 
                 if gameState.turnDuration != nil {
@@ -40,7 +40,7 @@ struct PlayerTurnView: View {
         }
         .frame(width: 240, height: 240)
         .padding(20)
-        .background(Color(gameState.currentPlayer.color))
+        .background(Color(gameState.currentPlayer?.color ?? Color.clear))
         .cornerRadius(15)
         .overlay(
             RoundedRectangle(cornerRadius: 15)
@@ -55,7 +55,6 @@ struct PlayerTurnView: View {
             GameState(players: [
                 Player(id: UUID(), name: "Horace", color: AppColor.playerMustard),
                 Player(id: UUID(), name: "Aisha", color: AppColor.playerGrape)
-            ],
-                      turnDuration: 60)
+            ])
         )
 }

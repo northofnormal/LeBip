@@ -104,7 +104,6 @@ struct ChooseFirstPlayerView: View {
                 Player(id: UUID(), name: "Horace", color: AppColor.playerMustard),
                 Player(id: UUID(), name: "Aisha", color: AppColor.playerGrape),
                 Player(id: UUID(), name: "Lola", color: AppColor.playerRose)
-            ],
-                      turnDuration: 60)
+            ])
         )
 }
