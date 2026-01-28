@@ -58,40 +58,49 @@ struct GameStateTests {
         #expect(state.turnID == startingTurnID + 1)
     }
 
-    @Test func timerExpiresFlipsTimeExpiredBool() async {
-
-    }
-
-    @Test func timerStartsWhenGameStarts() async {
-
-    }
-
-    @Test func pausingTimerStopsDecrementing() async {
-
-    }
-
-    @Test func resumingTimerContinuesDecrementing() async {
-
-    }
-
     @Test func startingGameMovesPhaseToInGame() async  {
+        let testPlayers: [Player] = [firstTestPlayer, secondTestPlayer]
+        let state = GameState(players: testPlayers)
+        state.startGame()
 
+        #expect(state.gamePhase == .inGame)
     }
 
     @Test func chosingFirstPlayerMovesPhaseToInGame() async {
+        let testPlayers: [Player] = [firstTestPlayer, secondTestPlayer]
+        let state = GameState(players: testPlayers)
+        state.proceedToChoseFirstPlayer()
 
+        #expect(state.gamePhase == .choosingFirst)
     }
 
     @Test func endingGameMovesPhaseToGameOver() async {
+        let testPlayers: [Player] = [firstTestPlayer, secondTestPlayer]
+        let state = GameState(players: testPlayers)
 
+        state.startGame()
+        state.endGame()
+
+        #expect(state.gamePhase == .gameOver)
     }
 
     @Test func noWinnerMovesPhaseToSetup() async {
+        let testPlayers: [Player] = [firstTestPlayer, secondTestPlayer]
+        let state = GameState(players: testPlayers)
 
+        state.resetToSetup()
+
+        #expect(state.gamePhase == .setup)
     }
 
     @Test func winnerMovesPhaseToCelebrate() async {
+        let testPlayers: [Player] = [firstTestPlayer, secondTestPlayer]
+        let state = GameState(players: testPlayers)
+        state.startGame()
+        state.endGame()
+        state.setWinner(firstTestPlayer)
 
+        #expect(state.gamePhase == .celebrate)
     }
 
 }
